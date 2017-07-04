@@ -23,7 +23,7 @@
 		<section>
 		<!--activities-->
 		{%for act in activity_list%}
-			<h2><a href="{% url 'personal_management:detail' act.1.id%}">{{act.1.name}}</a></h2>
+			<h2><a href="{% url 'personal_management:detail' act.1.id%}" title="点击编辑">{{act.1.name}}</a></h2>
 			<p style="font-size: 16px">时间：{{act.1.time_start}}至{{act.1.time_end}}</p>
 			<p>地点：{{act.1.place}}</p>
 		{%endfor%}

@@ -4,18 +4,52 @@
 	<title>hello</title>
 </head>
 <body onload="custom_init()">
+<div id = "div_test">
+	<p id="para_test">this is a paragraph</p>
+	<p>this is another paragraph</p>
+</div>
 <p id = "para">old</p>
 <p><a href="http://www.baidu.com" style="background-color: #00FF00">ts</a>about</p>
 <script type="text/javascript">
 	function custom_init()
 	{
+		/*
 		var str = ''
 		str += 'hello';
 		num = 0;
 		str += num.toString()
 		var old =  document.getElementById("para");
 		old.innerHTML = str;
+		*/
+		var p = document.getElementById('div_test')
+		p.removeChild(p.getElementsByTagName('p')[2])
 	}
 </script>
+<!--
+<form role = "form" action="{% url 'personal_management:processor' activity.id %}" method="post" id = "form_detail">
+	<div id = "div_name">
+		<label for="input_name">活动名称</label>
+		<input type="text" name="name" value="{{act.name}}" id="input_name"/>
+	</div>
+	<div id="div_time_start">
+		<label for="input_time_start">起始时间</label>
+		<input type="text" name="time_start" value="{{act.time_start}}" id="input_time_start"/>
+	</div>
+	<div id="div_time_end">
+		<label for="input_time_end">结束时间</label>
+		<input type="text" name="time_end" value="{{act.time_end}}" id="input_time_end"/>
+	</div>
+	<div id="div_num_participants">
+		<label for="input_num_participants">起始时间</label>
+		<input type="number" name="num_participants" value="{{act.num_participants}}" id="input_num_participants"/>
+	</div>
+	<div id="div_place">
+		<label for="input_place">地点</label>
+		<input type="text" name="place" value="{{act.place}}" id="input_place"/>
+	</div>
+	<input type="submit" value="确认修改" id="submit_detail">
+</form>
+-->
+
 </body>
 </html>

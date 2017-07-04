@@ -8,5 +8,8 @@ urlpatterns = [
 	url(r'^list_page/(?P<content>applied|unapplied|applying)/$',\
 	views.list_page , name = 'list_page'),
 	url(r'^search$', views.search, name = 'search'),
-	url(r'^activity_detail/(?P<id>[0-9]+)$', views.detail, name = 'detail')
+	url(r'^activity_detail/(?P<id>[0-9]+)$', views.detail, name = 'detail'),
+	url(r'^edit_processor/(?P<id>[0-9]+)$', views.processor, name = 'processor'),
+	url(r'^widthdraw$', views.withdraw, name = 'withdraw'),
+	url(r'^apply$', views.apply, name = 'apply'),
 ]

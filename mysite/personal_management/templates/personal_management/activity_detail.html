@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	{% load static %}
+	{% load p_m_extra_filter %}
+	<title>活动详情</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css'%}"/>
+</head>
+<body onload="custom_init({{state}})">
+	<div id = "main_content">
+		<!--绘制消息-->
+		{% if messages %}
+		<div class="alert alert-info messages" role="alert">
+		<ul class="messages list-unstyled">
+		{% for message in messages %}
+		<li{% if message.tags %} class="{{ message.tags}}" {% endif %}>
+		{{ message }}
+		</li>
+		{% endfor %}
+
+		</ul>
+		</div>
+		{% endif %}
+		<p>申请状态：{{state|apply_state}}</p>
+		<!--活动编辑-->
+		<form role = "form" action="{% url 'personal_management:processor' activity.id %}" method="post" id = "form_detail">
+			{% csrf_token %}
+			<div id = "div_name" class="form-group">
+				<label for="input_name">活动名称</label>
+				<input type="text" name="name" value="{{activity.name}}" id="input_name"/>
+			</div>
+			<div id="div_time_start" class="form-group">
+				<label for="input_time_start">起始时间</label>
+				<input type="text" name="time_start" value="{{activity.time_start.year}}/{{activity.time_start.month}}/{{activity.time_start.day}} {{activity.time_start.hour}}点" id="input_time_start"/>
+				<p class="help-block">输入格式：年/月/日 （24小时制）整点</p>
+			</div>
+			<div id="div_time_end" class="form-group">
+				<label for="input_time_end">结束时间</label>
+				<input type="text" name="time_end" value="{{activity.time_end.year}}/{{activity.time_end.month}}/{{activity.time_end.day}} {{activity.time_end.hour}}点" id="input_time_end"/>
+				<p class="help-block">输入格式：年/月/日 （24小时制）整点</p>
+			</div>
+			<div id="div_num_participants" class="form-group">
+				<label for="input_num_participants">参与人数</label>
+				<input type="number" name="num_participants" value="{{activity.num_participants}}" id="input_num_participants"/>
+			</div>
+			<div id="div_place" class="form-group">
+				<label for="input_place">地点</label>
+				<input type="text" name="place" value="{{activity.place}}" id="input_place"/>
+			</div>
+			<div id="div_privilege", class="form-group">
+				<label for="select_privilege">志愿等级</label>
+				<select name="privilege" id="select_privilege">
+					<option value="0">第一志愿</option>
+					<option value="1">第二志愿</option>
+					<option value="2">第三志愿</option>
+				</select>
+			</div>
+		<!--撤销按钮-->
+			<div class="form-group" id="div_withdraw">
+				<label><input id="checkbox_withdraw" type="checkbox" name="withdraw"/>撤销申请</label>
+			</div>
+			<div class="form-group" id="div_apply">
+				<label><input id="checkbox_apply" type="checkbox" name="apply"/>提交申请</label>
+			</div>
+			<input type="submit" value="确认修改" id="submit_detail">
+		</form>
+	</div>
+	<script type="text/javascript">
+		function custom_init(state) {
+			// body...
+			var p, children;
+			switch(state)
+			{
+			case 0:
+				//删除撤销申请表单
+				p = document.getElementById('form_detail')
+				p.removeChild(document.getElementById('div_withdraw'))
+				break;
+			default:
+				//删除提交申请表单，删除志愿选择表单，详情提交按钮，所有input元素变成只读
+				p = document.getElementById('form_detail')
+				p.removeChild(document.getElementById('div_apply'))
+				p = document.getElementById('form_detail')
+				p.removeChild(document.getElementById('div_privilege'))
+				p = document.getElementById('form_detail')
+				p.removeChild(document.getElementById('submit_detail'))
+				children = document.getElementById('form_detail').getElementsByTagName('input')
+				for(var i = 0; i < children.length; ++i)
+				{
+					children[i].disabled = true
+				}
+			}
+		}
+	</script>
+</body>
+</html>
