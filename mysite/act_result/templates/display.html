@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>最终活动安排公示</h3>
+<ul>
+	{% for place in places%}
+	<li>
+		<a href="{% url 'place_check' place.id %}">{{place.name}}</a>
+		<hr />
+	</li>
+	{% endfor %}
+</ul>
+<a href='{% url 'arrange' %}'><input type="button" value="活动安排"/></a>
+{% endblock %}

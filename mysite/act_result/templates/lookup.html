@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>最终活动安排公示</h3>
+<br />
+<h3>活动地点：{{place.name}}</h3>
+<br />
+<h4>本次安排活动时间：{{place.time_start}} ~ {{place.time_end}}</h4>
+<br />
+<div>
+	请输入需要查询的时间
+	<input id=dateInput type="date" name="user_date"  required min="2016-07-01" max="2017-07-08"/>
+	<a href='{% url 'display' %}'>
+		<input type="button" value="搜索"/>
+	</a>
+</div>
+<script>
+	var smonth = {{place.time_start.month}}
+	var sday = {{place.time_start.day}}
+	var sstrMonth = "" + smonth
+	var sstrDay = "" + sday
+	if(smonth < 10)
+	{
+		sstrMonth = '0' + sstrMonth
+	}
+	if(sstrDay < 10)
+	{
+		sstrDay = '0' + sstrDay
+	}
+	document.getElementById("dateInput").min = "{{place.time_start.year}}-" + sstrMonth + "-" + sstrDay
+	
+	var emonth = {{place.time_end.month}}
+	var eday = {{place.time_end.day}}
+	var estrMonth = "" + emonth
+	var estrDay = "" + eday
+	if(emonth < 10)
+	{
+		estrMonth = '0' + estrMonth
+	}
+	if(estrDay < 10)
+	{
+		estrDay = '0' + estrDay
+	}
+	document.getElementById("dateInput").max = "{{place.time_end.year}}-" + estrMonth + "-" + estrDay
+	//a.setFullYear({{place.time_start.year}}, {{place.time_start.month}} - 1, {{place.time_start.day}})
+	//document.write("<div>活动开始时间:"+ a +"</div>")
+</script>
+
+
+
+
+{% for act in activities%}
+	<h4>活动名称：{{act.name}}</h4>
+	<div> 
+		<div id="sy" tag="a"></div>
+		<ul>
+			<li>开始时间：{{act.time_start}} 终止时间：{{act.time_end}}</li>
+			<li>参与人数：{{act.num_participants}}</li>
+		</ul>
+	</div>
+	
+	<hr />
+{% endfor %}
+
+<a href='{% url 'display' %}'>
+	<input type="button" value="返回上级"/>
+</a>
+{% endblock %}

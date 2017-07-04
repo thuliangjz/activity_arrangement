@@ -7,21 +7,10 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css'%}"/>
 </head>
 <body onload="custom_init({{index}})">
-<!--acting as a navigator-->
-<div id = "side_bar" style="float:left;">
-		<p>功能导航</p>
-		<ul class="nav nav-pills nav-stacked">
-			<li id="a0"><a href="{% url 'personal_management:list_page' 'unapplied'%}">未申请</a></li>
-			<li id="a1"><a  href="{%url 'personal_management:list_page' 'applying'%}">正在申请</a></li>
-			<li id="a2"><a href="{%url 'personal_management:list_page' 'applied'%}">已申请</a></li>
-			<li id="a3"><a href="{%url 'personal_management:search'%}">搜索页面</a></li>
-		</ul>
-</div>
+{%include 'p_m_nav.html'%}
 <div id = "content_main" style = "float: left;" class="container">
-	<!--places to check activities, created by template-->
 	<div>
 		<section>
-		<!--activities-->
 		{%for act in activity_list%}
 			<h2><a href="{% url 'personal_management:detail' act.1.id%}" title="点击编辑">{{act.1.name}}</a></h2>
 			<p style="font-size: 16px">时间：{{act.1.time_start}}至{{act.1.time_end}}</p>

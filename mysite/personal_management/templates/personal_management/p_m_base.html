@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang = 'zh-cn'>
+<head>
+	{% load static %}
+	{% load p_m_extra_filter %}
+	<title>{%block title%}活动安排网站{%endblock%}</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css'%}"/>
+</head>
+<body onload="custom_init({index})">
+<div id="sidebar" style="float: left">
+	<p style="font-size: 18px">功能导航</p>
+		<ul class="nav nav-pills nav-stacked" style="font-size: 16px">
+			<li id="a0"><a href="{% url 'personal_management:list_page' 'unapplied'%}">未申请</a></li>
+			<li id="a1"><a  href="{%url 'personal_management:list_page' 'applying'%}">正在申请</a></li>
+			<li id="a2"><a href="{%url 'personal_management:list_page' 'applied'%}">已申请</a></li>
+			<li id="a3"><a href="{%url 'personal_management:search'%}">搜索页面</a></li>
+			<li id="a4"><a href="{%url 'display'%}">申请结果公示</a></li>
+		</ul>
+</div>
+<div id="div_content" style="float: left">
+	{%block content%}
+	嘿嘿这里什么都没有
+	{%endblock%}
+</div>
+<script type="text/javascript">
+	function custom_init(index) {
+		// body...
+		str_id = 'a' + index.toString()
+		document.getElementById(str_id).className = "active";
+	}
+</script>
+</body>
+</html>

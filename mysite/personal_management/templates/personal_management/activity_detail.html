@@ -1,26 +1,16 @@
 <!DOCTYPE html>
-<html lang="zh-cn">
+<html>
 <head>
 	{% load static %}
 	{% load p_m_extra_filter %}
-	<title>活动详情</title>
+	<title>活动详情页</title>
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css'%}"/>
 </head>
 <body onload="custom_init({{state}})">
-	<div id = "main_content">
+	{%include 'p_m_nav.html'%}
+	<div id = "main_content" style="float: left;">
 		<!--绘制消息-->
-		{% if messages %}
-		<div class="alert alert-info messages" role="alert">
-		<ul class="messages list-unstyled">
-		{% for message in messages %}
-		<li{% if message.tags %} class="{{ message.tags}}" {% endif %}>
-		{{ message }}
-		</li>
-		{% endfor %}
-
-		</ul>
-		</div>
-		{% endif %}
+		{%include 'p_m_message.html'%}
 		<p>申请状态：{{state|apply_state}}</p>
 		<!--活动编辑-->
 		<form role = "form" action="{% url 'personal_management:processor' activity.id %}" method="post" id = "form_detail">
@@ -82,8 +72,7 @@
 				p.removeChild(document.getElementById('div_apply'))
 				p = document.getElementById('form_detail')
 				p.removeChild(document.getElementById('div_privilege'))
-				p = document.getElementById('form_detail')
-				p.removeChild(document.getElementById('submit_detail'))
+				//p = document.getElementById('form_detail')
 				children = document.getElementById('form_detail').getElementsByTagName('input')
 				for(var i = 0; i < children.length; ++i)
 				{

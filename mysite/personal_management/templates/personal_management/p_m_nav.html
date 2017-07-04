@@ -1,0 +1,10 @@
+<div id = "side_bar" style="float:left;">
+		<p>功能导航</p>
+		<ul class="nav nav-pills nav-stacked">
+			<li id="a0"><a href="{% url 'personal_management:list_page' 'unapplied'%}">未申请</a></li>
+			<li id="a1"><a  href="{%url 'personal_management:list_page' 'applying'%}">正在申请</a></li>
+			<li id="a2"><a href="{%url 'personal_management:list_page' 'applied'%}">已申请</a></li>
+			<li id="a3"><a href="{%url 'personal_management:search'%}">搜索页面</a></li>
+			<li id="a4"><a href="{%url 'display'%}">申请结果公示</a></li>
+		</ul>
+</div>

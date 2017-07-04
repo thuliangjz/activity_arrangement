@@ -100,8 +100,8 @@ def processor(request, **args):
 			act_content = content_convert(act_content)	#转换为有效类型
 			#冲突检查
 			if not advanced_check(request = request, apply = act_content):
-			return HttpResponseRedirect(reverse('personal_management:detail',\
-				args = (args['id'],)))
+				return HttpResponseRedirect(reverse('personal_management:detail',\
+					args = (args['id'],)))
 			
 	else:
 		#非编辑之后的跳转
