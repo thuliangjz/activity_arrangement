@@ -1,10 +1,17 @@
 <div id = "side_bar" style="float:left;">
 		<p>功能导航</p>
 		<ul class="nav nav-pills nav-stacked">
-			<li id="a0"><a href="{% url 'personal_management:list_page' 'unapplied'%}">未申请</a></li>
-			<li id="a1"><a  href="{%url 'personal_management:list_page' 'applying'%}">正在申请</a></li>
-			<li id="a2"><a href="{%url 'personal_management:list_page' 'applied'%}">已申请</a></li>
-			<li id="a3"><a href="{%url 'personal_management:search'%}">搜索页面</a></li>
-			<li id="a4"><a href="{%url 'display'%}">申请结果公示</a></li>
+			<li id="nav_sidebar0"><a href="{% url 'personal_management:list_page' 'unapplied'%}">未申请</a></li>
+			<li id="nav_sidebar1"><a  href="{%url 'personal_management:list_page' 'applying'%}">正在申请</a></li>
+			<li id="nav_sidebar2"><a href="{%url 'personal_management:list_page' 'applied'%}">已申请</a></li>
+			<li id="nav_sidebar3"><a href="{%url 'personal_management:search' 'time'%}">搜索页面</a></li>
+			<li id="nav_sidebar4"><a href="{%url 'display'%}">申请结果公示</a></li>
 		</ul>
 </div>
+<script type="text/javascript">
+	function custom_init_nav_side(index) {
+		// body...
+		str_id = 'nav_sidebar' + index.toString()
+		document.getElementById(str_id).className = "active";
+	}
+</script>

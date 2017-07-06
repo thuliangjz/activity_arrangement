@@ -6,7 +6,7 @@
 	<title>活动详情页</title>
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css'%}"/>
 </head>
-<body onload="custom_init({{state}})">
+<body onload="custom_init({{state}}, {{privilege}})">
 	{%include 'p_m_nav.html'%}
 	<div id = "main_content" style="float: left;">
 		<!--绘制消息-->
@@ -56,28 +56,37 @@
 		</form>
 	</div>
 	<script type="text/javascript">
-		function custom_init(state) {
+		function custom_init(state, privilege) {
 			// body...
 			var p, children;
+			var detail = document.getElementById('form_detail')
+			var input_list
+			document.getElementById('select_privilege').getElementsByTagName('option')[privilege].setAttribute('selected','selected')
 			switch(state)
 			{
 			case 0:
 				//删除撤销申请表单
-				p = document.getElementById('form_detail')
-				p.removeChild(document.getElementById('div_withdraw'))
+				detail.removeChild(document.getElementById('div_withdraw'))
+				break;
+			case 1:
+				//删除申请按钮；名称，起始终止时间人数，地点禁用
+				detail.removeChild(document.getElementById('div_apply'))
+				input_list = detail.getElementsByTagName('div')
+				for(var i = 0; i < input_list.length - 1; ++i)
+				{
+					input_list[i].getElementsByTagName('input')[0].disabled = true
+				}
 				break;
 			default:
-				//删除提交申请表单，删除志愿选择表单，详情提交按钮，所有input元素变成只读
-				p = document.getElementById('form_detail')
-				p.removeChild(document.getElementById('div_apply'))
-				p = document.getElementById('form_detail')
-				p.removeChild(document.getElementById('div_privilege'))
-				//p = document.getElementById('form_detail')
-				children = document.getElementById('form_detail').getElementsByTagName('input')
-				for(var i = 0; i < children.length; ++i)
+				//删除申请按钮和优先级选择按钮，名称，起始终止时间人数，地点禁用
+				detail.removeChild(document.getElementById('div_apply'))
+				detail.removeChild(document.getElementById('div_privilege'))
+				input_list = detail.getElementsByTagName('div')
+				for(var i = 0; i < input_list.length - 1; ++i)
 				{
-					children[i].disabled = true
+					input_list[i].getElementsByTagName('input')[0].disabled = true
 				}
+				break;
 			}
 		}
 	</script>

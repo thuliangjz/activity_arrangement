@@ -29,7 +29,7 @@ def init():
 		t_e = datetime(2017, 7, 10, 17, 0, 0) + timedelta(days = 1) * i
 		init_state = lst_state[i % 3]
 		num_p = 20 + i * 10
-		pri = 3
+		pri = 2
 		Activity.objects.get_or_create(name = act_name, time_start = t_s,\
 		 time_end = t_e, state = init_state, num_participants = num_p, \
 		 privilege = pri, place = lst_place[i %2], user = u)

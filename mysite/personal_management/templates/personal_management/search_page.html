@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	{% load static %}
+	{% load p_m_extra_filter %}
+	<title>搜索页面</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css'%}"/>
+</head>
+<body onload="init_search({{page_dir}}, '{{type}}')">
+{%include 'p_m_nav.html'%}
+<div id="main_content" style="float: left;">
+	<!--上方检索方式导航栏-->
+	<div id="nav_search">
+		<ul class="nav nav-tabs">
+			<li id="nav_search_time"><a href="{% url 'personal_management:search' 'time'%}">按活动时间检索</a></li>
+			<li id="nav_search_place"><a href="{% url 'personal_management:search' 'place'%}">按活动地点检索</a></li>
+			<li id="nav_search_name"><a href="{% url 'personal_management:search' 'name'%}">按活动名称检索</a></li>
+		</ul>
+	</div>
+	{%include 'p_m_message.html'%}
+	<!--供检索输入用的表单-->
+	<form class="form-inline" role="form" action="{{fedback}}" method="post">
+		{% csrf_token %}
+		{%if type == 'time'%}
+		<div class="form-group">
+			<label for="input_time_start">起始时间</label>
+			<input type="text" name="time_start" id="input_time_start">
+		</div>
+		<div class="form-group">
+			<label for="input_time_end">终止时间</label>
+			<input type="text" name="time_end" id="input_time_end">
+		</div>
+		<div class="form-group">
+			<p class="help-block">输入时间格式:年/月/日</p>
+		</div>
+		{%endif%}
+		{%if type == 'place'%}
+		<div class="form-group">
+			<label for="input_place">在此输入活动的场地</label>
+			<input type="text" name="place" id="input_place">
+		</div>
+		{%endif%}
+		{%if type == 'name'%}
+			<div class="form-group">
+				<label for="input_name">在此输入活动的名称</label>
+				<input type="text" id="input_name" name="name">
+			</div>
+		{%endif%}
+		<button type="submit" class="btn btn-default">检索</button>
+	</form>
+	<!--检索结果页面-->
+	{%if not is_initial %}
+	<div class="container">
+		{%if result|is_empty%}
+			<h2 class="text-center" style="font-style: 16px">未找到符合要求的活动</h2>
+		{%else%}
+			{%for act in result%}
+			<h2><a href="{% url 'personal_management:detail' act.id%}" title="点击编辑">{{act.name}}</a></h2>
+			{%endfor%}
+		{%endif%}
+	{%endif%}
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+	function init_search(pgdir, search_type) {
+		// body...
+		custom_init_nav_side(pgdir)
+		var str_search_type = "nav_search_" + search_type
+		document.getElementById(str_search_type).className = "active";
+	}
+</script>
+</html>

@@ -6,7 +6,7 @@
 	<title>List Page</title>
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css'%}"/>
 </head>
-<body onload="custom_init({{index}})">
+<body onload="custom_init_nav_side({{index}})">
 {%include 'p_m_nav.html'%}
 <div id = "content_main" style = "float: left;" class="container">
 	<div>
@@ -19,12 +19,5 @@
 		</section>
 	</div>
 </div>
-<script type="text/javascript">
-	function custom_init(index) {
-		// body...
-		str_id = 'a' + index.toString()
-		document.getElementById(str_id).className = "active";
-	}
-</script>
 </body>
 </html>
