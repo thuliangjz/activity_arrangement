@@ -27,11 +27,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['59.66.137.46']
 
-
 # Application definition
 
 INSTALLED_APPS = [
     'custom_proj.basic',
+	'start',
     'act_result',
     'personal_management',
     'manager',

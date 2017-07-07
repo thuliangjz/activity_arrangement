@@ -1,13 +1,49 @@
 {% extends 'base.html' %}
 {% block content %}
-<h3>最终活动安排公示</h3>
+<h2>最终活动安排公示</h2>
+<h3>以下是活动安排最多的4个教室</h3>
+		{% load static %}
+	    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+<div class="row">
 <ul>
-	{% for place in places%}
 	<li>
+	{% for place in places%}
+	<div class = "col-sm-6, col-md-3">
 		<a href="{% url 'place_check' place.id %}">{{place.name}}</a>
 		<hr />
-	</li>
+	</div>
 	{% endfor %}
+	</li>
 </ul>
-<a href='{% url 'arrange' %}'><input type="button" value="活动安排"/></a>
+</div>
+<br />
+
+<div style="text-align:left">
+<h3>教室搜索</h3>
+</div>
+<div style="text-align:center">
+	请输入对应的相关字符串，支持模糊匹配
+	
+	<form action = "/result/" method="POST">
+		{%csrf_token%}
+		<input type="text", name = "checkString">
+		<input type="submit" value="确认搜索" />
+	</form>
+</div>
+
+
+<h4>查询结果</h4>
+<div class = "row">
+<ul>
+	<li>
+	{% for result in results%}
+	<div class = "col-sm-6, col-md-3">
+		<a href="{% url 'place_check' result.id %}">{{result.name}}</a>
+		<hr />
+	</div>
+	{% endfor %}
+	</li>
+</ul>
+</div>
+
 {% endblock %}

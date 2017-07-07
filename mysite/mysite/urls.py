@@ -21,4 +21,5 @@ urlpatterns = [
 	url(r'^manager/', include('manager.urls')),
 	url(r'^result/', include('act_result.urls')),
     url(r'^admin/', admin.site.urls),
+	url(r'^$', include('start.urls')),
 ]

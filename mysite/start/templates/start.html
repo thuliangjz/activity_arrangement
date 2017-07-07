@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+<div class="text-align:center">
+	<h2 style="text-align:center">您好！欢迎进入活动安排网站“活动管家”的引导页面</h2>
+</div>
+<br />
+<div class="col-sm-6, col-md-6" style="text-align:center">
+	<div style="font-size:24px">
+		如果您有一个账号？
+	</div>
+	<br />	
+	<div>
+		<a href="{% url 'login' %}">
+			<button class="btn btn-lg">
+				登录
+			</button>
+		</a>
+	</div>
+	
+	<br />	
+	<br />
+	<br />
+	<br />
+	<br />
+	
+	<div style="font-size:24px">
+		如果您没有账号但是有验证码？
+	</div>
+	<br />
+	<div>
+	<a href="{% url 'regist' %}">
+		<button class="btn btn-lg">
+			注册
+		</button>
+	</a>
+	</div>
+
+</div>
+
+<div class="col-sm-6, col-md-6" style="text-align:center">
+	<div style="font-size:24px">
+		如果您需要浏览当前的活动安排列表？
+	</div>
+	<br />	
+	<div>
+		<a href="{% url 'display' %}">
+			<button class="btn btn-lg">
+				活动安排表
+			</button>
+		</a>
+	</div>
+	
+	<br />	
+	<br />
+	<br />
+	<br />
+	<br />
+	
+	<div style="font-size:24px">
+		如果您还有什么不清楚的？
+	</div>
+	<br />
+	<div>
+	<a href="{% url 'regist' %}">
+		<button class="btn btn-lg">
+			帮助文档
+		</button>
+	</a>
+	</div>
+
+</div>
+
+{%endblock%}
