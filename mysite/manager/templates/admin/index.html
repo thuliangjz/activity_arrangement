@@ -1,0 +1,89 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}" />{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+{% if app_list %}
+    {% for app in app_list %}
+            
+            <div class="app-{{ app.app_label }} module">
+            <table>
+            <caption>
+                <a href="{{ app.app_url }}" class="section" title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}">{{ app.name }}</a>
+            </caption>
+            {% for model in app.models %}
+                <tr class="model-{{ model.object_name|lower }}">
+                {% if model.admin_url %}
+                    <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
+                {% else %}
+                    <th scope="row">{{ model.name }}</th>
+                {% endif %}
+
+                {% if model.add_url %}
+                    <td><a href="{{ model.add_url }}" class="addlink">{% trans 'Add' %}</a></td>
+                {% else %}
+                    <td>&nbsp;</td>
+                {% endif %}
+
+                {% if model.admin_url %}
+                    <td><a href="{{ model.admin_url }}" class="changelink">{% trans 'Change' %}</a></td>
+                {% else %}
+                    <td>&nbsp;</td>
+                {% endif %}
+                </tr>
+            {% endfor %}
+            </table>
+            </div>
+           
+        
+    {% endfor %}
+{% else %}
+    <p>{% trans "You don't have permission to edit anything." %}</p>
+{% endif %}
+</div>
+{% endblock %}
+
+{% block sidebar %}
+
+<form  method="post" action="">
+	{% csrf_token %}
+	<div>
+        <h2>设定时间结点</h2>
+		<label>开始时间</label>
+		<input type="time" id="time_start" name="time_start" class="form-control" placeholder="开始时间" required />
+        <label>结束时间</label>
+		<input type="time" id="time_end" name="time_end" class="form-control" placeholder="结束时间" required />
+		<button type="submit" class="btn btn-primary">设定</button>
+	</div>
+</form>
+<form method="post" action="">
+	{% csrf_token %}
+	<button type="submit" class="btn btn-primary">一键安排</button>
+</form>
+<div>
+	<h2>批量导入</h2>
+	<h3>批量导入地点信息</h3>
+	<form enctype="multipart/form-data" action="{% url 'upload_places' %}" method="post"> 
+	    {% csrf_token %}
+		<input type="file" name="places_file" />  
+		<br/>  
+	    <input type="submit" value="upload"/>  
+	</form>
+	<h3>批量导入验证码</h3>
+	<form enctype="multipart/form-data" action="{% url 'upload_qualifications' %}" method="post">  
+	    {% csrf_token %}
+		<input type="file" name="qualifications_file" />  
+	    <br/>  
+	    <input type="submit" value="upload"/>  
+	</form>
+</div>
+{% endblock %}

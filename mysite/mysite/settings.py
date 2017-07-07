@@ -58,7 +58,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['personal_management/templates/personal_management'],
+        'DIRS': ['personal_management/templates/personal_management', os.path.join(BASE_DIR, 'manager/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

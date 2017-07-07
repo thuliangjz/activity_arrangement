@@ -1,5 +1,5 @@
 @echo off
-set "VIRTUAL_ENV=E:\programming_exercise\summer_proj"
+set "VIRTUAL_ENV=E:\web\activity_arrangement"
 
 if not defined PROMPT (
     set "PROMPT=$P$G"
@@ -14,7 +14,7 @@ if defined _OLD_VIRTUAL_PYTHONHOME (
 )
 
 set "_OLD_VIRTUAL_PROMPT=%PROMPT%"
-set "PROMPT=(summer_proj) %PROMPT%"
+set "PROMPT=(activity_arrangement) %PROMPT%"
 
 if defined PYTHONHOME (
     set "_OLD_VIRTUAL_PYTHONHOME=%PYTHONHOME%"
