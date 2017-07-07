@@ -124,10 +124,17 @@ def processor(request, **args):
 				#用户修改了申请情况,返回活动详情界面，并提示添加成功
 				messages.info(request, '活动安排已取消')
 				act.state = custom_model.UNAPPLIED
+				act.save();
+				return HttpResponseRedirect(reverse('personal_management:detail',args = (args['id'], )))
 			if 'privilege' in request.POST and act.privilege != int(request.POST['privilege']):
 				#用户修改了志愿等级
-				messages.info(request, '志愿修改成功')
-				act.privilege = int(request.POST['privilege'])
+				if check_privilege_change(request.user, int(request.POST['privilege'])):
+					messages.info(request, '志愿修改成功')
+					act.privilege = int(request.POST['privilege'])
+					act.save()
+				else:
+					messages.info(request,'您当前志愿已用完')
+			return HttpResponseRedirect(reverse('personal_management:detail',args = (args['id'], )))
 		elif act.state == custom_model.UNAPPLIED:
 			act_content = Activity_Content(request.POST)
 			#先进行输入信息有效性的基本检查
@@ -376,6 +383,12 @@ def get_privilege_info(user):
 		 user = user, privilege = i, )))
 	return lst_info
 
+def check_privilege_change(user, privilege):
+	lst_pri = get_privilege_info(user)
+	if privilege != len(custom_model.NUM_PRIVILEGES) and\
+	 lst_pri[privilege] >= custom_model.NUM_PRIVILEGES[privilege]:
+		return False
+	return True
 #数据库的回滚
 def roll_back(obj_list):
 	for obj in obj_list:
