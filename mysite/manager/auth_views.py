@@ -10,6 +10,7 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.urls import reverse
 import os
 import re
+import datetime
 def login(request):
     return render(request, 'login.html')
 def authenticate(request):
@@ -20,7 +21,13 @@ def authenticate(request):
         messages.info(request, '登陆失败')
         return redirect('login')
     auth.login(request, user)
-    return HttpResponseRedirect(reverse(link.URL_CUSTOMER, args = ('unapplied',)))						#在这里redirect到用户视图
+    return HttpResponseRedirect(reverse(link.URL_CUSTOMER, args = ('unapplied',)))	
+def check_time(str_time, str_format):
+	try:
+		t = datetime.datetime.strptime(str_time, str_format)
+	except ValueError:
+		return None
+	return t
 def upload_places(request):
     if request.method == 'POST':
         myFile = request.FILES.get("places_file", None)
@@ -32,16 +39,24 @@ def upload_places(request):
         destination.close()
         f = open(os.path.join("manager\\upload",myFile.name),'r')
         i = 1
+        #Place.objects.create(name = "qq", description = "", potential = int(22))
+        t3 = check_time("2017", '%y%m%d').date()
+        t4 = check_time("2017", '%y%m%d').date()
+        #Place.objects.create(name = "ee", description = "", potential = int(22), time_start = t3, time_end = t4)
         for line in f:
-            match = re.match(r'<name>(\w+)</name><description>(\w*)</description><potential>(\w+)</potential><time_start>(\w*)</time_start><time_end>(\w*)</time_end>', line)
-            if match:
+            match = re.match(r'<name>(\w+)</name><description>(\w*)</description><potential>(\w+)</potential><time_start>(\w+)</time_start><time_end>(\w+)</time_end>', line)
+            if match and check_time(match.group(4), '%y%m%d') and check_time(match.group(5), '%y%m%d'):
                 i += 1
             else:
                 messages.info(request, '上传文件格式错误:第%d行中断'%i)
                 return HttpResponse('上传文件格式错误:第%d行中断'%i)
-        for li in f:
-            ma = re.match(r'<name>(\w+)</name><description>(\w*)</description><potential>(\w+)</potential><time_start>(\w*)</time_start><time_end>(\w*)</time_end>', line)
-            Place.objects.create(name = ma.group(1), description = ma.group(2), potential = ma.group(3), time_start = ma.group(4), time_end = ma.group(5))
+        f.close()
+        f = open(os.path.join("manager\\upload",myFile.name),'r')
+        for line in f:
+            ma = re.match(r'<name>(\w+)</name><description>(\w*)</description><potential>([0-9]+)</potential><time_start>(\w+)</time_start><time_end>(\w+)</time_end>', line)
+            t1 = check_time(ma.group(4), '%y%m%d').date() 
+            t2 = check_time(ma.group(5), '%y%m%d').date()
+            Place.objects.create(name = ma.group(1), description = ma.group(2), potential = int(ma.group(3)), time_start = t1, time_end = t2)
         return HttpResponse("upload!")
         
 def upload_qualifications(request):
@@ -58,6 +73,17 @@ def upload_qualifications(request):
             line = line[0:-1]
             Qualification.objects.create(certificate = line)
         return HttpResponse("upload!")
+def timeset(request):
+    time_start = request.POST.get('time_start')
+    time_end = request.POST.get('time_end')
+    file = open("manager\\time.txt", 'w')
+    file.write("<time_start>")
+    file.write(time_start)
+    file.write("</time_start>\n")
+    file.write("<time_end>")
+    file.write(time_end)
+    file.write("</time_end>")
+    return HttpResponse("set")
 def regist(request):
     return render(request, 'regist.html')
 def regist_submit(request):

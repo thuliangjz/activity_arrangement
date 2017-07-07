@@ -11,4 +11,5 @@ urlpatterns = [
 	url(r'^regist/submit$', auth_views.regist_submit, name='regist-submit'),
 	url(r'^upload_places$', auth_views.upload_places, name='upload_places'),
 	url(r'^upload_qualifications$', auth_views.upload_qualifications, name='upload_qualifications'),
+    url(r'^timeset$', auth_views.timeset, name='timeset'),
 ]

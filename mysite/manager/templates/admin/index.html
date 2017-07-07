@@ -54,7 +54,7 @@
 
 {% block sidebar %}
 
-<form  method="post" action="">
+<form  method="post" action="{% url 'timeset' %}">
 	{% csrf_token %}
 	<div>
         <h2>设定时间结点</h2>
