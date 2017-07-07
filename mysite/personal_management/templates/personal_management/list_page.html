@@ -3,12 +3,14 @@
 <head>
 	{% load static %}
 	{% load p_m_extra_filter %}
-	<title>List Page</title>
+	<title>活动列表展示:{{type_activity}}</title>
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css'%}"/>
 </head>
 <body onload="custom_init_nav_side({{index}})">
-{%include 'p_m_nav.html'%}
-<div id = "content_main" style = "float: left;" class="container">
+{%include 'p_m_greetings.html'%}
+<div>
+	{%include 'p_m_nav.html'%}
+	<div id = "content_main" style = "float: left;" class="container">
 	{%include 'p_m_message.html'%}
 	<div>
 		<section>
@@ -20,5 +22,7 @@
 		</section>
 	</div>
 </div>
+</div>
+
 </body>
 </html>

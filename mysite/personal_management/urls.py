@@ -13,4 +13,5 @@ urlpatterns = [
 	url(r'^widthdraw$', views.withdraw, name = 'withdraw'),
 	url(r'^apply$', views.apply, name = 'apply'),
 	url(r'^create/(?P<type>manual|upload)', views.load, name = 'create'),
+	url(r'^refresh/$', views.profile_refresh, name = 'refresh'),
 ]

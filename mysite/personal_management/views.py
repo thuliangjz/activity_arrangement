@@ -10,6 +10,7 @@ from . import forms
 import custom_proj.basic.models as custom_model
 import datetime
 import re
+from django.db.models import Q
 from custom_proj import links
 #for development
 from django.contrib.auth import authenticate, login, logout
@@ -22,7 +23,7 @@ def fake_log_in(request):
 	user = authenticate(request, username = name, password = passwd)
 	if user is not None:
 		login(request, user)
-		return HttpResponseRedirect(reverse('personal_management:list_page', args = ('unapplied',)))
+		return HttpResponseRedirect(reverse('personal_management:refresh'))
 	else:
 		raise Http404('fake user does not exist')
 
@@ -38,17 +39,25 @@ def list_page(request, **args):
 	#index_current = args['index']
 	dic_index = {'unapplied':0, 'applying':1, 'applied':2}
 	dic_tmp = {'unapplied':0, 'applying':1, 'applied':2}		#used to configer string and consts in basic.models
-	activity_list = custom_model.Activity.objects.filter(user = request.user, state = dic_tmp[content])
+	dic_lst_name = {'unapplied': '未申请', 'applying':'正在申请','applied':'已申请'}
+	activity_list = custom_model.Activity.objects.filter(user = request.user, state = dic_tmp[content]).order_by('time_start')
 	return render(request, 'personal_management/list_page.html',\
 	 {'index':dic_index[content], 'activity_list':enumerate(activity_list),\
-	 'page_size':'2'})
+	 'page_size':'2', 'username':request.user.username, 'type_activity':dic_lst_name[content]})
+
+def profile_refresh(request, **args):
+	act_past = custom_model.Activity.objects.filter(user = request.user,
+	 state = custom_model.APPLIED, time_start__lt = datetime.datetime.now())
+	for act in act_past:
+		act.delete()
+	return HttpResponseRedirect(reverse('personal_management:list_page', args = ('unapplied',)))
 
 @login_required
 def search(request, **args):
 	type_search = args['type']
 	dic_tmp = {'is_inintial':True, 'type':type_search, \
 			'fedback':reverse('personal_management:search', args = (type_search,)),\
-			'page_dir':3}
+			'page_dir':3, 'username':request.user.username}
 	if request.method == 'POST':
 		#用户提交了相应的搜索请求
 		if type_search == 'time':
@@ -59,7 +68,7 @@ def search(request, **args):
 				messages.info(request, '请按提示的格式输入时间')
 				return HttpResponseRedirect(reverse('personal_management:search', args = ('time', )))
 			t_e = t_e + datetime.timedelta(days = 1)
-			result_list = custom_model.Activity.objects.filter(time_start__range = (t_s, t_e))
+			result_list = custom_model.Activity.objects.filter(time_start__range = (t_s, t_e)).order_by('time_start')
 		elif type_search == 'place':
 			place = check_place(request.POST['place'])
 			if place == None:
@@ -73,7 +82,7 @@ def search(request, **args):
 			return HttpResponseRedirect(reverse('personal_management:search', args = ('time', )))
 		dic_tmp['is_initial'] = False
 		dic_tmp['result'] = result_list
-		return HttpResponseRedirect(revere('personal_management:search'), args = (type_search, ))
+		return render(request, 'personal_management/search_page.html',dic_tmp)
 	else:
 		#用户初次来到该页面
 		return render(request, 'personal_management/search_page.html',dic_tmp)		
@@ -91,9 +100,12 @@ def detail(request, **args):
 		init_d_p = {'privilege':act.privilege}
 		f_privilege = forms.PrivilegeForm(init_d_p, initial = init_d_p)
 		pri_map = {'unapplied':custom_model.UNAPPLIED, 'applying':custom_model.APPLYING, 'applied':custom_model.APPLIED}
+		lst_p = get_privilege_info(request.user)
 		return render(request, 'personal_management/activity_detail.html',\
 			{'f_act':f_act, 'f_privilege':f_privilege, 'state':act.state,\
-			'activity':act, 'map_privilege':pri_map, 'privilege':act.privilege})
+			'activity':act, 'map_privilege':pri_map, 'privilege':act.privilege,
+			'privilege_info': lst_p, 'privilege_bound':list(custom_model.NUM_PRIVILEGES),
+			'username':request.user.username})
 
 #如果不是申请活动，只要保证输入信息的基本合法性即可
 #对于申请活动的情形，还需要保证活动没有冲突
@@ -116,7 +128,6 @@ def processor(request, **args):
 				#用户修改了志愿等级
 				messages.info(request, '志愿修改成功')
 				act.privilege = int(request.POST['privilege'])
-
 		elif act.state == custom_model.UNAPPLIED:
 			act_content = Activity_Content(request.POST)
 			#先进行输入信息有效性的基本检查
@@ -196,8 +207,11 @@ def load(request, **args):
 				messages.info(request, '活动导入成功')
 				return HttpResponseRedirect(reverse('personal_management:create', args = ('upload', )))
 	else:
+		lst_p = get_privilege_info(request.user)
 		return render(request, 'personal_management/create.html', {'type':type_load, 'page_dir':5, \
-			'fedback':reverse('personal_management:create', args = (type_load,))})
+			'fedback':reverse('personal_management:create', args = (type_load,)),
+			'privilege_info':lst_p, 'privilege_bound':list(custom_model.NUM_PRIVILEGES),
+			'username':request.user.username})
 
 
 class Activity_Content:
@@ -354,6 +368,13 @@ def create_activity(**args):
 		state = custom_model.APPLYING if args['apply'] else custom_model.UNAPPLIED, user = args['user'])
 	obj.save()
 	return (True, obj, [])
+
+def get_privilege_info(user):
+	lst_info = []
+	for i in range(len(custom_model.NUM_PRIVILEGES)):
+		lst_info.append(len(custom_model.Activity.objects.filter(Q(state=custom_model.APPLIED) | Q(state=custom_model.APPLYING),
+		 user = user, privilege = i, )))
+	return lst_info
 
 #数据库的回滚
 def roll_back(obj_list):

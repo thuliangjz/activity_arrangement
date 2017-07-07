@@ -15,3 +15,11 @@ def is_empty(value):
 	if value == None:
 		return False
 	return not(value.exists())
+
+@register.filter(name = 'add')
+def add(value, args):
+	return value + args
+
+@register.filter(name = 'length')
+def add(value):
+	return len(value)

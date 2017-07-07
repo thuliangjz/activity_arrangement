@@ -7,35 +7,37 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css'%}"/>
 </head>
 <body onload="custom_init({{state}}, {{privilege}})">
+{%include 'p_m_greetings.html'%}
+<div>
 	{%include 'p_m_nav.html'%}
 	<div id = "main_content" style="float: left;">
 		<!--绘制消息-->
 		{%include 'p_m_message.html'%}
-		<p>申请状态：{{state|apply_state}}</p>
+		<p class="text-info">申请状态：{{state|apply_state}}</p>
 		<!--活动编辑-->
 		<form role = "form" action="{% url 'personal_management:processor' activity.id %}" method="post" id = "form_detail">
 			{% csrf_token %}
 			<div id = "div_name" class="form-group">
 				<label for="input_name">活动名称</label>
-				<input type="text" name="name" value="{{activity.name}}" id="input_name"/>
+				<input class="form-control" type="text" name="name" value="{{activity.name}}" id="input_name"/>
 			</div>
 			<div id="div_time_start" class="form-group">
 				<label for="input_time_start">起始时间</label>
-				<input type="text" name="time_start" value="{{activity.time_start.year}}/{{activity.time_start.month}}/{{activity.time_start.day}} {{activity.time_start.hour}}点" id="input_time_start"/>
+				<input class="form-control" type="text" name="time_start" value="{{activity.time_start.year}}/{{activity.time_start.month}}/{{activity.time_start.day}} {{activity.time_start.hour}}点" id="input_time_start"/>
 				<p class="help-block">输入格式：年/月/日 （24小时制）整点</p>
 			</div>
 			<div id="div_time_end" class="form-group">
 				<label for="input_time_end">结束时间</label>
-				<input type="text" name="time_end" value="{{activity.time_end.year}}/{{activity.time_end.month}}/{{activity.time_end.day}} {{activity.time_end.hour}}点" id="input_time_end"/>
+				<input class="form-control" type="text" name="time_end" value="{{activity.time_end.year}}/{{activity.time_end.month}}/{{activity.time_end.day}} {{activity.time_end.hour}}点" id="input_time_end"/>
 				<p class="help-block">输入格式：年/月/日 （24小时制）整点</p>
 			</div>
 			<div id="div_num_participants" class="form-group">
 				<label for="input_num_participants">参与人数</label>
-				<input type="number" name="num_participants" value="{{activity.num_participants}}" id="input_num_participants"/>
+				<input class="form-control" type="number" name="num_participants" value="{{activity.num_participants}}" id="input_num_participants"/>
 			</div>
 			<div id="div_place" class="form-group">
 				<label for="input_place">地点</label>
-				<input type="text" name="place" value="{{activity.place}}" id="input_place"/>
+				<input class="form-control" type="text" name="place" value="{{activity.place}}" id="input_place"/>
 			</div>
 			<div id="div_privilege", class="form-group">
 				<label for="select_privilege">志愿等级</label>
@@ -44,6 +46,8 @@
 					<option value="1">第二志愿</option>
 					<option value="2">第三志愿</option>
 				</select>
+				<p>当前志愿情况:第一志愿:{{privilege_info.0}}/{{privilege_bound.0}};第二志愿{{privilege_info.1}}/{{privilege_bound.1}};第三志愿任意
+				</p>
 			</div>
 		<!--撤销按钮-->
 			<div class="form-group" id="div_withdraw">
@@ -55,7 +59,7 @@
 			<div class="form-group" id="div_delete">
 				<label><input id="checkbox_apply" type="checkbox" name="delete"/>删除该活动</label>
 			</div>
-			<input type="submit" value="确认修改" id="submit_detail">
+			<input class="form-control" type="submit" value="确认修改" id="submit_detail">
 		</form>
 	</div>
 	<script type="text/javascript">
@@ -93,5 +97,6 @@
 			}
 		}
 	</script>
+</div>
 </body>
 </html>

@@ -7,6 +7,8 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css'%}"/>
 </head>
 <body onload="init_create('{{page_dir}}', '{{type}}')">
+{%include 'p_m_greetings.html'%}
+<div>
 {%include 'p_m_nav.html'%}
 <div style="float: left">
 	<!--上方导航栏-->
@@ -24,25 +26,25 @@
 		<!--创建手动输入表单-->
 		<div id = "div_name" class="form-group">
 			<label for="input_name">活动名称</label>
-			<input type="text" name="name" value="{{activity.name}}" id="input_name"/>
+			<input class="form-control" type="text" name="name" value="{{activity.name}}" id="input_name"/>
 		</div>
 		<div id="div_time_start" class="form-group">
 				<label for="input_time_start">起始时间</label>
-				<input type="text" name="time_start" id="input_time_start"/>
+				<input class="form-control" type="text" name="time_start" id="input_time_start"/>
 				<p class="help-block">输入格式：年/月/日 （24小时制）整点</p>
 		</div>
 		<div id="div_time_end" class="form-group">
 			<label for="input_time_end">结束时间</label>
-			<input type="text" name="time_end" id="input_time_end"/>
+			<input class="form-control" type="text" name="time_end" id="input_time_end"/>
 			<p class="help-block">输入格式：年/月/日 （24小时制）整点</p>
 		</div>
 		<div id="div_num_participants" class="form-group">
 			<label for="input_num_participants">参与人数</label>
-			<input type="number" name="num_participants" value="{{activity.num_participants}}" id="input_num_participants"/>
+			<input class="form-control" type="number" name="num_participants" value="{{activity.num_participants}}" id="input_num_participants"/>
 		</div>
 		<div id="div_place" class="form-group">
 				<label for="input_place">地点</label>
-				<input type="text" name="place" value="{{activity.place}}" id="input_place"/>
+				<input class="form-control" type="text" name="place" value="{{activity.place}}" id="input_place"/>
 		</div>
 		<!--默认选择第三志愿-->
 		<div id="div_privilege", class="form-group">
@@ -52,6 +54,7 @@
 					<option value="1">第二志愿</option>
 					<option value="2" selected="selected">第三志愿</option>
 				</select>
+				<p>当前志愿情况:第一志愿:{{privilege_info.0}}/{{privilege_bound.0}};第二志愿{{privilege_info.1}}/{{privilege_bound.1}};第三志愿任意
 		</div>
 		<!--默认不申请-->
 		<div id="div_apply" class="form-group">
@@ -65,7 +68,7 @@
 		<!--创建文件录入表单-->
 		<div class="form-group">
 		    <label for="inputfile">文件输入</label>
-		    <input type="file" name="file" />
+		    <input class="form-control" type="file" name="file" />
 		    <p class="help-block">点击选择您想要录入的文件</p>
 		    <p class="help-block">文件格式要求：<br/>每一行对应一条活动。不同的域(按顺序)用标签进行标识：<br/>
 		    &lt;name&gt;活动名称(不超过256个字符)&lt;/name&gt;<br/>
@@ -90,5 +93,6 @@
 		document.getElementById(type).className = "active";
 	}
 </script>
+</div>
 </body>
 </html>
