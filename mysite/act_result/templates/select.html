@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>最终活动安排公示</h3>
+<br />
+<h3>活动地点：{{place.name}}</h3>
+<h4>活动地点说明：{{place.description}}</h4>
+<br />
+<h4>本次安排活动时间：{{place.time_start}} ~ {{place.time_end}}</h4>
+
+
+
+<div style="text-align:left">
+<h3>教室搜索</h3>
+	<form action = "{% url 'lookup' %}" method="POST" onsubmit="return isValid()">
+		{%csrf_token%}
+		<div class = "col-sm-6, col-md-3">
+			开始时间<input type="date" name = "dateStart" id="st" required min="" max=""/>
+		</div>
+		<div class = "col-sm-6, col-md-3">
+			结束时间<input type="date" name = "dateEnd" id="et" required min="" max=""/>
+		</div>
+		<input type="hidden", name="placeId", value={{place.id}}>
+		<input type="submit" value="确认搜索" />
+	</form>
+</div>
+
+<script>
+	function getDate(a, b, c)
+	{
+		str = ""+a
+		if(b < 10)
+		{
+			str=str+"-0"+b
+		}
+		else		
+		{
+			str=str+"-"+b
+		}
+		if(c < 10)
+		{
+			str=str+"-0"+c
+		}
+		else
+		{
+			str=str+"-"+c
+		}
+		return str
+	}
+	minDate = getDate({{place.time_start.year}},{{place.time_start.month}},{{place.time_start.day}})
+	maxDate = getDate({{place.time_end.year}},{{place.time_end.month}},{{place.time_end.day}})
+	
+	document.getElementById("st").min=minDate
+	document.getElementById("et").min=minDate
+	document.getElementById("st").max=maxDate
+	document.getElementById("et").max=maxDate
+	
+	function isValid()
+	{
+		var timeStart = document.getElementById("st").value;
+		var timeEnd = document.getElementById("et").value;
+		if(timeStart <= timeEnd)
+		{
+			return true;
+		}
+		else
+		{
+			alert("终止时间必须不小于起始时间，请重新提交");
+			return false;
+		}
+	}
+</script>
+
+<a href='{% url 'display' %}'>
+	<input type="button" value="返回上级"/>
+</a>
+
+
+{% endblock %}

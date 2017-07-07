@@ -4,64 +4,80 @@
 <br />
 <h3>活动地点：{{place.name}}</h3>
 <br />
-<h4>本次安排活动时间：{{place.time_start}} ~ {{place.time_end}}</h4>
+<h4>本次安排活动时间：{{time_start}} ~ {{time_end}}</h4>
+
 <br />
-<div>
-	请输入需要查询的时间
-	<input id=dateInput type="date" name="user_date"  required min="2016-07-01" max="2017-07-08"/>
-	<a href='{% url 'display' %}'>
-		<input type="button" value="搜索"/>
-	</a>
-</div>
+<h4>以下是对应时间段的安排列表，其中黄色部分表示已安排，蓝色部分表示未安排</h4>
+<br />
+
 <script>
-	var smonth = {{place.time_start.month}}
-	var sday = {{place.time_start.day}}
-	var sstrMonth = "" + smonth
-	var sstrDay = "" + sday
-	if(smonth < 10)
+	function formatOutput(a)
 	{
-		sstrMonth = '0' + sstrMonth
+		if(a < 10)
+		{
+			return "0"+a
+		}
+		else
+		{
+			return ""+a
+		}
 	}
-	if(sstrDay < 10)
+	var num = Array({%for i in parameters %}{{i}},{%endfor%})
+	var sdy = new Date({{time_start.year}},{{time_start.month}}-1,{{time_start.day}})
+	var edy = new Date({{time_end.year}},{{time_end.month}}-1,{{time_end.day}})
+	var delta = edy.getTime()-sdy.getTime()
+	var deltaDays = Math.floor(delta/(24*3600*1000))
+	document.write("<svg width=\"1600\" height=\""+ ((deltaDays + 1) * 120) +"\">")
+	for (var i = 0; i <= deltaDays; i++)
 	{
-		sstrDay = '0' + sstrDay
+		var currDay = new Date(sdy.getFullYear(), sdy.getMonth(), sdy.getDate())
+		currDay.setDate(sdy.getDate()+i)
+		document.write("<text x=\"0\" y=\""+ (i * 120 + 50)+"\" fill=\"black\">"+currDay.getFullYear()+"年"+(currDay.getMonth()+1)+"月"+currDay.getDate()+"日：</text>")
+		document.write("<rect x=\"120\" y=\"" + (i * 120) +"\" width=\"1152\" height=\"100\" style=\"fill:rgb(0,255,255);stroke-width:1;stroke:rgb(0,0,0)\"/>")
+		
+		for (var j = 0;j < 24; j++)
+		{
+			var startPos = j*48+120
+			var endPos = (j+1)*48+120
+			var avgPos = (startPos+endPos)/2-20
+			document.write("<rect x=\""+ startPos +"\" y=\"" + (i * 120) +"\" width=\"48\" height=\"100\" style=\"fill:rgb(0,255,255);stroke-width:1;stroke:rgb(0,0,0)\"/>")//绘制对应的活动安排的矩形
+			document.write("<text x=\""+ (avgPos - 2) +"\" y=\""+ (i * 120 + 15) +"\" fill=\"red\">待安排</text>")
+			document.write("<text x=\""+ (avgPos - 2) +"\" y=\""+ (i * 120 + 30) +"\" fill=\"red\">"+num[i][j]+"个</text>")
+			document.write("<text x=\""+ avgPos +"\" y=\""+ (i * 120 + 50) +"\" fill=\"black\">"+formatOutput(j)+":00</text>")
+			document.write("<text x=\""+ (avgPos+11) +"\" y=\""+ (i * 120 + 65) +"\" fill=\"black\">~</text>")
+			document.write("<text x=\""+ avgPos +"\" y=\""+ (i * 120 + 80) +"\" fill=\"black\">"+formatOutput(j+1)+":00</text>")
+		}
 	}
-	document.getElementById("dateInput").min = "{{place.time_start.year}}-" + sstrMonth + "-" + sstrDay
 	
-	var emonth = {{place.time_end.month}}
-	var eday = {{place.time_end.day}}
-	var estrMonth = "" + emonth
-	var estrDay = "" + eday
-	if(emonth < 10)
-	{
-		estrMonth = '0' + estrMonth
-	}
-	if(estrDay < 10)
-	{
-		estrDay = '0' + estrDay
-	}
-	document.getElementById("dateInput").max = "{{place.time_end.year}}-" + estrMonth + "-" + estrDay
-	//a.setFullYear({{place.time_start.year}}, {{place.time_start.month}} - 1, {{place.time_start.day}})
-	//document.write("<div>活动开始时间:"+ a +"</div>")
+	{% for act in activities %}
+		var startTime = new Date({{act.time_start.year}}, {{act.time_start.month}}-1, {{act.time_start.day}}, {{act.time_start.hour}}, {{act.time_start.minute}},{{act.time_start.second}})
+		var endTime = new Date({{act.time_end.year}}, {{act.time_end.month}}-1, {{act.time_end.day}}, {{act.time_end.hour}}, {{act.time_end.minute}},{{act.time_end.second}})
+		var currDelta = startTime.getTime()-sdy.getTime()
+		var currDeltaDays = Math.floor(currDelta/(24*3600*1000))//用于计算放在哪一个画布上
+		var startPos = Math.floor({{act.time_start.hour}}*48 + {{act.time_start.minute}}*0.8) + 120//判定开始绘制的x轴位置
+		var endPos = Math.floor({{act.time_end.hour}}*48 + {{act.time_end.minute}}*0.8) + 120//判定结束绘制的x轴位置
+		var length = endPos - startPos
+		var avgPos = Math.floor((startPos + endPos)/2) - 20
+		
+		document.write("<rect x=\""+ startPos +"\" y=\"" + (currDeltaDays * 120) +"\" width=\""+length+"\" height=\"100\" style=\"fill:rgb(255,255,0);stroke-width:1;stroke:rgb(0,0,0)\"/>")//绘制对应的活动安排的矩形
+		document.write("<text x=\""+ (avgPos - 2) +"\" y=\""+ (currDeltaDays * 120 + 30) +"\" fill=\"red\">已安排</text>")
+		document.write("<text x=\""+ avgPos +"\" y=\""+ (currDeltaDays * 120 + 50) +"\" fill=\"black\">"+formatOutput({{act.time_start.hour}})+":"+formatOutput({{act.time_start.minute}})+"</text>")
+		document.write("<text x=\""+ (avgPos+11) +"\" y=\""+ (currDeltaDays * 120 + 65) +"\" fill=\"black\">~</text>")
+		document.write("<text x=\""+ avgPos +"\" y=\""+ (currDeltaDays * 120 + 80) +"\" fill=\"black\">"+formatOutput({{act.time_end.hour}})+":"+formatOutput({{act.time_end.minute}})+"</text>")
+	{% endfor %}
+	
+	document.write("</svg>")
+	
 </script>
 
 
 
-
-{% for act in activities%}
-	<h4>活动名称：{{act.name}}</h4>
-	<div> 
-		<div id="sy" tag="a"></div>
-		<ul>
-			<li>开始时间：{{act.time_start}} 终止时间：{{act.time_end}}</li>
-			<li>参与人数：{{act.num_participants}}</li>
-		</ul>
-	</div>
-	
-	<hr />
-{% endfor %}
-
 <a href='{% url 'display' %}'>
 	<input type="button" value="返回上级"/>
 </a>
+
+<a href='{% url 'place_check' place.id %}'>
+	<input type="button" value="返回该活动搜索">
+</a>
+
 {% endblock %}
