@@ -9,6 +9,7 @@ from django.contrib import messages
 from . import forms
 import custom_proj.basic.models as custom_model
 import datetime
+import re
 from custom_proj import links
 #for development
 from django.contrib.auth import authenticate, login, logout
@@ -72,7 +73,7 @@ def search(request, **args):
 			return HttpResponseRedirect(reverse('personal_management:search', args = ('time', )))
 		dic_tmp['is_initial'] = False
 		dic_tmp['result'] = result_list
-		return render(request, 'personal_management/search_page.html', dic_tmp)
+		return HttpResponseRedirect(revere('personal_management:search'), args = (type_search, ))
 	else:
 		#用户初次来到该页面
 		return render(request, 'personal_management/search_page.html',dic_tmp)		
@@ -100,6 +101,12 @@ def detail(request, **args):
 def processor(request, **args):
 	if request.method == 'POST':
 		act = get_object_or_404(custom_model.Activity, id = args['id'], user = request.user)
+		if 'delete' in request.POST:
+			act.delete()
+			dic_state = {custom_model.UNAPPLIED:'unapplied', custom_model.APPLYING: 'applying', 
+			custom_model.APPLIED: 'applied'}
+			messages.info(request, '活动\"%s\"删除成功'%(act.name))
+			return HttpResponseRedirect(reverse('personal_management:list_page', args = (dic_state[act.state],)))
 		if act.state != custom_model.UNAPPLIED:
 			if 'withdraw' in request.POST:
 				#用户修改了申请情况,返回活动详情界面，并提示添加成功
@@ -139,6 +146,59 @@ def processor(request, **args):
 			act.num_participants = act_content.num_participants;
 		act.save()
 	return HttpResponseRedirect(reverse('personal_management:detail',args = (args['id'], )))
+
+
+#apply由两个radio构成，是对应1
+#文件录入的名字是'file'
+@login_required
+def load(request, **args):
+	type_load = args['type']
+	if request.method == 'POST':
+		if type_load == 'manual':
+			#手动录入
+			dic_act_create = {}
+			for key in request.POST:
+				dic_act_create[key] = request.POST[key]
+			#apply由两个radio构成，是对应1
+			dic_act_create['apply'] = True if dic_act_create['apply'] == '1' else False
+			dic_act_create['user'] = request.user; dic_act_create['time_format'] = '%Y/%m/%d %H点'
+			check = create_activity(**dic_act_create)
+			if not check[0]:
+				for msg in check[2]:
+					messages.info(request, msg)
+				return HttpResponseRedirect(reverse('personal_management:create', args = ('manual', )))
+			messages.info(request, '活动创建成功')
+			return HttpResponseRedirect(reverse('personal_management:create', args = ('manual', )))
+		elif type_load == 'upload':
+			#通过文件上传
+			if len(request.FILES) == 0:
+				messages.info(request,'还没有上传任何文件哦')
+				return HttpResponseRedirect(reverse('personal_management:create', args = ('upload', )))
+			else:
+				file = request.FILES['file']; line_current = 0
+				lst_created = []
+				for line in file:
+					line_current += 1; p = parse(line)
+					if not p[0]:
+						messages.info(request, '在第%d行出现了标签解析错误，已撤销录入'%line_current)
+						roll_back(lst_created)
+						return HttpResponseRedirect(reverse('personal_management:create', args = ('upload', )))
+					p[1]['user'] = request.user; p[1]['time_format'] = '%Y/%m/%d/%H'
+					check = create_activity(**p[1])
+					if not check[0]:
+						messages.info(request, '为%d行安排活动时出现错误：'%line_current)
+						for msg in check[2]:
+							messages.info(request, msg)
+						roll_back(lst_created)
+						messages.info(request, '已撤销录入')
+						return HttpResponseRedirect(reverse('personal_management:create', args = ('upload', )))
+					lst_created.append(check[1])
+				messages.info(request, '活动导入成功')
+				return HttpResponseRedirect(reverse('personal_management:create', args = ('upload', )))
+	else:
+		return render(request, 'personal_management/create.html', {'type':type_load, 'page_dir':5, \
+			'fedback':reverse('personal_management:create', args = (type_load,))})
+
 
 class Activity_Content:
 	name = ''
@@ -228,26 +288,6 @@ def advanced_check(**args):
 		flag = False; err_msg_lst.append("您当前志愿可选活动已用完%d, %d"%(act_apply.privilege, len(custom_model.NUM_PRIVILEGES)))
 	return (flag, err_msg_lst)
 
-'''
-def advanced_check(**args):
-	user = args['request'].user
-	act_apply = args['apply']
-	request = args['request']
-	act_list = custom_model.Activity.objects.filter(user = user, state = custom_model.APPLIED)
-	if not links.APPLY_TIME_START < datetime.datetime.now().time() < links.APPLY_TIME_END:
-		messages.info(request, '现在不在申请时间范围内')
-		return False
-	for act in act_list:
-		if act.id != act_apply.id and overlapped(act.time_start, act.time_end, act_apply.time_start, act_apply.time_end):
-			messages.info(request, "您选择的活动与已选择的\'%s\'相冲突"%act.name)
-			return False
-	place = act_apply.place
-	if not place.time_start < act_apply.time_start.date() < place.time_end:
-		messages.info(request, '您选择活动的场地在选择时间内不开放')
-		return False
-	return True
-'''
-
 def overlapped(s1, e1, s2, e2):
 	if ((s1 <= s2 and s2 < e1) or (s2 <= s1 and s1 < e2)):
 	    return True
@@ -260,15 +300,6 @@ def act_changed(act_old, act_new):
 		and act_old.num_participants == act_new.num_participants:
 		return False
 	return True
-
-@login_required
-def withdraw(request, **args):
-	return HttpResponse('withdraw')
-
-@login_required
-def apply(request, **args):
-	return HttpResponse('apply')
-
 
 def check_place(str_place):
 	try:
@@ -283,3 +314,56 @@ def check_time(str_time, str_format):
 	except ValueError:
 		return None
 	return t
+
+#从给定的行中提取出活动的信息
+pat_line = re.compile(r'<name>(.+)</name><time_start>(.+)</time_start><time_end>(.+)</time_end><num_participants>(.+)</num_participants><place>(.+)</place><privilege>(.+)</privilege><apply>(.+)</apply>')
+lst_tag = ['name', 'time_start', 'time_end', 'num_participants', 'place', 'privilege', 'apply']
+def parse(line):
+	result = pat_line.search(line.decode())
+	if result == None:
+		return (False, None)
+	dic = {}; result = result.groups()
+	for i, k in enumerate(lst_tag):
+		dic[k] = result[i]
+	dic['apply'] = True if dic['apply'] == 'True' else False
+	return (True, dic)
+
+'''
+如果dic的内容合法，则在数据库中创建相应的活动，返回一个三元组(是否成功，活动对象，出错信息)
+args 中应包含：name, time_start, time_end, num_participants, place, privilege, apply(bool型变量), time_format(时间格式), user
+'''
+def create_activity(**args):
+	act_content = Activity_Content(args)
+	check = valid_check(activity_content = act_content, time_format = args['time_format'])
+	if not check[0]:
+		return (False, None, check[1])
+	act_content = content_convert(act_content, args['time_format'])
+	try:
+		act_content.privilege = int(args['privilege'])
+		if act_content.privilege > len(custom_model.NUM_PRIVILEGES) or act_content.privilege < 0:
+			raise ValueError
+	except ValueError:
+		return (False, None, ['输入的志愿信息无效'])
+	if args['apply']:
+		act_content.id = -1
+		check = advanced_check(apply = act_content, user = args['user'])
+		if not check[0]:
+			return (False, None, check[1])
+	obj = custom_model.Activity.objects.create(name = act_content.name, time_start = act_content.time_start, time_end = act_content.time_end,
+		num_participants = act_content.num_participants, place = act_content.place, privilege = act_content.privilege, 
+		state = custom_model.APPLYING if args['apply'] else custom_model.UNAPPLIED, user = args['user'])
+	obj.save()
+	return (True, obj, [])
+
+#数据库的回滚
+def roll_back(obj_list):
+	for obj in obj_list:
+		obj.delete()
+
+@login_required
+def withdraw(request, **args):
+	return HttpResponse('withdraw')
+
+@login_required
+def apply(request, **args):
+	return HttpResponse('apply')

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	{% load static %}
+	{% load p_m_extra_filter %}
+	<title>活动导入页面</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css'%}"/>
+</head>
+<body onload="init_create('{{page_dir}}', '{{type}}')">
+{%include 'p_m_nav.html'%}
+<div style="float: left">
+	<!--上方导航栏-->
+	<div id="nav_search">
+		<ul class="nav nav-tabs">
+			<li id="nav_create_manual"><a href="{% url 'personal_management:create' 'manual'%}">手动输入</a></li>
+			<li id="nav_create_upload"><a href="{% url 'personal_management:create' 'upload'%}">批量导入</a></li>
+		</ul>
+	</div>
+	{%include 'p_m_message.html'%}
+	<!--创建活动的表单-->
+	<form role="form" action="{{fedback}}" method="post" enctype="multipart/form-data">
+		{% csrf_token %}
+		{%if type == 'manual'%}
+		<!--创建手动输入表单-->
+		<div id = "div_name" class="form-group">
+			<label for="input_name">活动名称</label>
+			<input type="text" name="name" value="{{activity.name}}" id="input_name"/>
+		</div>
+		<div id="div_time_start" class="form-group">
+				<label for="input_time_start">起始时间</label>
+				<input type="text" name="time_start" id="input_time_start"/>
+				<p class="help-block">输入格式：年/月/日 （24小时制）整点</p>
+		</div>
+		<div id="div_time_end" class="form-group">
+			<label for="input_time_end">结束时间</label>
+			<input type="text" name="time_end" id="input_time_end"/>
+			<p class="help-block">输入格式：年/月/日 （24小时制）整点</p>
+		</div>
+		<div id="div_num_participants" class="form-group">
+			<label for="input_num_participants">参与人数</label>
+			<input type="number" name="num_participants" value="{{activity.num_participants}}" id="input_num_participants"/>
+		</div>
+		<div id="div_place" class="form-group">
+				<label for="input_place">地点</label>
+				<input type="text" name="place" value="{{activity.place}}" id="input_place"/>
+		</div>
+		<!--默认选择第三志愿-->
+		<div id="div_privilege", class="form-group">
+				<label for="select_privilege">志愿等级</label>
+				<select name="privilege" id="select_privilege">
+					<option value="0">第一志愿</option>
+					<option value="1">第二志愿</option>
+					<option value="2" selected="selected">第三志愿</option>
+				</select>
+		</div>
+		<!--默认不申请-->
+		<div id="div_apply" class="form-group">
+			<p>是否提出申请</p>
+			<input type="radio" name="apply" id="r_a_y" value="1"/>
+			<label for="r_a_y">是</label>
+			<input type="radio" name="apply" id="r_a_n" value="2" checked="true" />
+			<label for="r_a_n">否</label>
+		</div>
+		{%else%}
+		<!--创建文件录入表单-->
+		<div class="form-group">
+		    <label for="inputfile">文件输入</label>
+		    <input type="file" name="file" />
+		    <p class="help-block">点击选择您想要录入的文件</p>
+		    <p class="help-block">文件格式要求：<br/>每一行对应一条活动。不同的域(按顺序)用标签进行标识：<br/>
+		    &lt;name&gt;活动名称(不超过256个字符)&lt;/name&gt;<br/>
+		    &lt;time_start&gt;起始时间(年/月/日/整点)&lt;/time_start<br/>
+		    &lt;time_end&gt;结束时间(同起始时间，注意当前只支持一天内的活动)&lt;/time_end&gt;<br/>
+		    &lt;num_participants&gt;参与人数&lt;/num_participants&gt;<br/>
+		    &lt;place&gt;地点&lt;/place&gt;<br/>
+		    &lt;privilege&gt;优先级(0,1,2对应1,2,3志愿)&lt;/privilege&gt;<br/>
+		    &lt;apply&gt;True表示提交活动申请，其他都视为不申请(建议您在批量录入时尽量少地申请活动，这样有助于提高录入的效率)&lt;/apply&gt;<br/>
+		    <b>注意：如果您录入的活动中存在不合适的输入或者提出申请的活动与已经录入的活动产生了冲突，那么文件中的所有活动都不会被录入</b>
+		    </p>
+		</div>
+		{%endif%}
+		<button type="submit" class="btn btn-default">确认</button>
+	</form>
+</div>
+<script type="text/javascript">
+	function init_create(pgdir, type_create) {
+		// body...
+		var type = 'nav_create_' + type_create
+		custom_init_nav_side(pgdir)
+		document.getElementById(type).className = "active";
+	}
+</script>
+</body>
+</html>

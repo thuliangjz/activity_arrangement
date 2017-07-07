@@ -7,9 +7,10 @@ urlpatterns = [
 	url(r'^fake_log_out$', views.fake_log_out, name = 'f_log_out'),
 	url(r'^list_page/(?P<content>applied|unapplied|applying)/$',\
 	views.list_page , name = 'list_page'),
-	url(r'^search/(?P<type>.+)$', views.search, name = 'search'),
+	url(r'^search/(?P<type>time|place|name)$', views.search, name = 'search'),
 	url(r'^activity_detail/(?P<id>[0-9]+)$', views.detail, name = 'detail'),
 	url(r'^edit_processor/(?P<id>[0-9]+)$', views.processor, name = 'processor'),
 	url(r'^widthdraw$', views.withdraw, name = 'withdraw'),
 	url(r'^apply$', views.apply, name = 'apply'),
+	url(r'^create/(?P<type>manual|upload)', views.load, name = 'create'),
 ]
