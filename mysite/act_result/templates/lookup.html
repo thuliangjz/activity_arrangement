@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'p_m_base_n.html' %}
 {% block content %}
 <h3>最终活动安排公示</h3>
 <br />
@@ -73,11 +73,11 @@
 
 
 <a href='{% url 'display' %}'>
-	<input type="button" value="返回上级"/>
+	<input type="button" class="btn btn-primary" value="返回上级"/>
 </a>
 
 <a href='{% url 'place_check' place.id %}'>
-	<input type="button" value="返回该活动搜索">
+	<input type="button" class="btn btn-primary" value="返回该活动搜索">
 </a>
 
 {% endblock %}

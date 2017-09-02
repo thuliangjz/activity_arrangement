@@ -15,11 +15,18 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-
+from django.conf import settings 
+from django.conf.urls.static import static
+from django.views.static import serve
 urlpatterns = [
 	url(r'^user/', include('personal_management.urls')),	#redirected to user page
 	url(r'^manager/', include('manager.urls')),
 	url(r'^result/', include('act_result.urls')),
     url(r'^admin/', admin.site.urls),
-	url(r'^$', include('start.urls')),
+	url(r'^welcome/', include('start.urls')),
+    url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT})
 ]
+'''
+if settings.DEBUG is False:
+    urlpatterns += patterns('', url(r'^static/(?P<path>.*)$', 'django.views.static.serve', { 'document_root': settings.STATIC_ROOT, }), )
+'''

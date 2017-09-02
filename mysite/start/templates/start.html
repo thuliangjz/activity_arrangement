@@ -23,8 +23,6 @@
 	<br />	
 	<br />
 	<br />
-	<br />
-	<br />
 	
 	<div style="font-size:24px">
 		如果您没有账号但是有验证码？
@@ -56,21 +54,36 @@
 	<br />	
 	<br />
 	<br />
-	<br />
-	<br />
 	
 	<div style="font-size:24px">
-		如果您还有什么不清楚的？
+		如果您还有什么不明白的？
 	</div>
 	<br />
 	<div>
-	<a href="{% url 'regist' %}">
+	<a href="{% url 'help' %}">
 		<button class="btn btn-lg">
 			帮助文档
 		</button>
 	</a>
 	</div>
 
+</div>
+
+
+
+<div style="text-align:center">
+
+	<div style="font-size:24px">
+		如果您已经登录了，并想查看自己的活动？
+	</div>
+	<br />
+	<div>
+		<a href="{% url 'personal_management:list_page' 'unapplied' %}">
+			<button class="btn btn-lg">
+				个人中心
+			</button>
+		</a>
+	</div>
 </div>
 
 {%endblock%}

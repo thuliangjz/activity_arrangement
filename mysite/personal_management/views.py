@@ -31,6 +31,10 @@ def fake_log_out(request):
 	logout(request)
 	raise Http404('log_out')
 
+def my_log_out(request):
+	logout(request)
+	return HttpResponseRedirect(reverse('start'))
+
 NUM_ACT_PER_PAGE = 3
 
 @login_required 
@@ -68,16 +72,16 @@ def search(request, **args):
 				messages.info(request, '请按提示的格式输入时间')
 				return HttpResponseRedirect(reverse('personal_management:search', args = ('time', )))
 			t_e = t_e + datetime.timedelta(days = 1)
-			result_list = custom_model.Activity.objects.filter(time_start__range = (t_s, t_e)).order_by('time_start')
+			result_list = custom_model.Activity.objects.filter(time_start__range = (t_s, t_e), user = request.user).order_by('time_start')
 		elif type_search == 'place':
 			place = check_place(request.POST['place'])
 			if place == None:
 				messages.info(request, '您输入的场地不存在')
 				return HttpResponseRedirect(reverse('personal_management:search', args = ('place', )))
-			result_list = custom_model.Activity.objects.filter(place = place)
+			result_list = custom_model.Activity.objects.filter(place = place, user = request.user)
 		elif type_search == 'name':
 			name = request.POST['name']
-			result_list = custom_model.Activity.objects.filter(name__contains = name)
+			result_list = custom_model.Activity.objects.filter(name__contains = name, user = request.user)
 		else:
 			return HttpResponseRedirect(reverse('personal_management:search', args = ('time', )))
 		dic_tmp['is_initial'] = False
@@ -172,6 +176,10 @@ def processor(request, **args):
 def load(request, **args):
 	type_load = args['type']
 	if request.method == 'POST':
+		user = request.user
+		if len(custom_model.Activity.objects.filter(user = request.user)) >= 100:
+			messages.info(request, '你已经上传的活动太多啦QAQ，删一些呗')
+			return HttpResponseRedirect(reverse('personal_management:create', args = ('manual', )))
 		if type_load == 'manual':
 			#手动录入
 			dic_act_create = {}
@@ -186,6 +194,7 @@ def load(request, **args):
 					messages.info(request, msg)
 				return HttpResponseRedirect(reverse('personal_management:create', args = ('manual', )))
 			messages.info(request, '活动创建成功')
+			check[1].save()
 			return HttpResponseRedirect(reverse('personal_management:create', args = ('manual', )))
 		elif type_load == 'upload':
 			#通过文件上传
@@ -199,7 +208,6 @@ def load(request, **args):
 					line_current += 1; p = parse(line)
 					if not p[0]:
 						messages.info(request, '在第%d行出现了标签解析错误，已撤销录入'%line_current)
-						roll_back(lst_created)
 						return HttpResponseRedirect(reverse('personal_management:create', args = ('upload', )))
 					p[1]['user'] = request.user; p[1]['time_format'] = '%Y/%m/%d/%H'
 					check = create_activity(**p[1])
@@ -207,11 +215,16 @@ def load(request, **args):
 						messages.info(request, '为%d行安排活动时出现错误：'%line_current)
 						for msg in check[2]:
 							messages.info(request, msg)
-						roll_back(lst_created)
+						messages.info(request, '已撤销录入')
+						return HttpResponseRedirect(reverse('personal_management:create', args = ('upload', )))
+					if len(lst_created) > 100:
+						messages.info(request, '你已经上传的活动太多啦QAQ，删一些呗')
 						messages.info(request, '已撤销录入')
 						return HttpResponseRedirect(reverse('personal_management:create', args = ('upload', )))
 					lst_created.append(check[1])
 				messages.info(request, '活动导入成功')
+				for obj in lst_created:
+					obj.save()
 				return HttpResponseRedirect(reverse('personal_management:create', args = ('upload', )))
 	else:
 		lst_p = get_privilege_info(request.user)
@@ -269,6 +282,10 @@ def valid_check(**args):
 	try:
 		activity_content.num_participants = int(activity_content.num_participants)
 		invalid_num_p = False
+		if activity_content.num_participants <= 0:
+			flag = False; lst_erro_msg.append('参与人数应为正数')
+		if activity_content.num_participants > 65536:
+			flag = False; lst_erro_msg.append('人数过多，学校容不下了...')
 	except ValueError:
 		flag = False; lst_erro_msg.append('请输入有效的参与人数'); invalid_num_p = True
 	return (flag, lst_erro_msg)
@@ -290,10 +307,10 @@ def advanced_check(**args):
 	flag = True
 	err_msg_lst = []
 	privilege_lst = list(custom_model.NUM_PRIVILEGES); privilege_lst.append(0)
-	if not links.get_apply_time_start() < datetime.datetime.now().time() < links.get_apply_time_end():
-		flag = False; err_msg_lst.apped('现在不在申请时间范围内')
+	if not links.get_apply_time_start() <= datetime.datetime.now().time() <= links.get_apply_time_end():
+		flag = False; err_msg_lst.append('现在不在申请时间范围内')
 	place = act_apply.place
-	if not place.time_start < act_apply.time_start.date() < place.time_end:
+	if not place.time_start <= act_apply.time_start.date() <= place.time_end:
 		flag = False; err_msg_lst.append('您选择活动的场地在选择时间内不开放')
 	if place.potential < act_apply.num_participants:
 		flag = False; err_msg_lst.append('您选择的场地容量过小')
@@ -373,7 +390,6 @@ def create_activity(**args):
 	obj = custom_model.Activity.objects.create(name = act_content.name, time_start = act_content.time_start, time_end = act_content.time_end,
 		num_participants = act_content.num_participants, place = act_content.place, privilege = act_content.privilege, 
 		state = custom_model.APPLYING if args['apply'] else custom_model.UNAPPLIED, user = args['user'])
-	obj.save()
 	return (True, obj, [])
 
 def get_privilege_info(user):

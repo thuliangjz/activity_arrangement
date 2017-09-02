@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'p_m_base_n.html' %}
 {% block content %}
 <h2>最终活动安排公示</h2>
 <h3>以下是活动安排最多的4个教室</h3>
@@ -45,5 +45,13 @@
 	</li>
 </ul>
 </div>
+
+<div>
+		<a href="{% url 'start' %}">
+			<button class="btn btn-lg">
+				返回主页
+			</button>
+		</a>
+	</div>
 
 {% endblock %}

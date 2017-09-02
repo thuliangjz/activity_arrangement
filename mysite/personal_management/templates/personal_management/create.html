@@ -32,6 +32,7 @@
 				<label for="input_time_start">起始时间</label>
 				<input class="form-control" type="text" name="time_start" id="input_time_start"/>
 				<p class="help-block">输入格式：年/月/日 （24小时制）整点</p>
+				<p class="help-block">例：2017/7/8 11点（因为date控件在很多浏览器上不支持，所以直接用文本框，不好意思啦）</p>
 		</div>
 		<div id="div_time_end" class="form-group">
 			<label for="input_time_end">结束时间</label>
@@ -72,13 +73,14 @@
 		    <p class="help-block">点击选择您想要录入的文件</p>
 		    <p class="help-block">文件格式要求：<br/>每一行对应一条活动。不同的域(按顺序)用标签进行标识：<br/>
 		    &lt;name&gt;活动名称(不超过256个字符)&lt;/name&gt;<br/>
-		    &lt;time_start&gt;起始时间(年/月/日/整点)&lt;/time_start<br/>
+		    &lt;time_start&gt;起始时间(年/月/日/整点)(如2017/7/1/16)&lt;/time_start&gt;<br/>
 		    &lt;time_end&gt;结束时间(同起始时间，注意当前只支持一天内的活动)&lt;/time_end&gt;<br/>
 		    &lt;num_participants&gt;参与人数&lt;/num_participants&gt;<br/>
 		    &lt;place&gt;地点&lt;/place&gt;<br/>
 		    &lt;privilege&gt;优先级(0,1,2对应1,2,3志愿)&lt;/privilege&gt;<br/>
 		    &lt;apply&gt;True表示提交活动申请，其他都视为不申请(建议您在批量录入时尽量少地申请活动，这样有助于提高录入的效率)&lt;/apply&gt;<br/>
-		    <b>注意：如果您录入的活动中存在不合适的输入或者提出申请的活动与已经录入的活动产生了冲突，那么文件中的所有活动都不会被录入</b>
+		    <b>注意：如果您录入的活动中存在不合适的输入或者提出申请的活动与已经录入的活动产生了冲突，那么文件中的所有活动都不会被录入</b><br/>
+		    <p>标签较多，建议直接在这里复制之后粘贴到文件中，去掉所有换行然后输入活动内容
 		    </p>
 		</div>
 		{%endif%}

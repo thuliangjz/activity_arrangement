@@ -9,4 +9,8 @@ urlpatterns = [
 	url(r'^authenticate$', auth_views.authenticate, name='authenticate'),
 	url(r'^regist$', auth_views.regist, name='regist'),
 	url(r'^regist/submit$', auth_views.regist_submit, name='regist-submit'),
-]
+	url(r'^upload_places$', auth_views.upload_places, name='upload_places'),
+	url(r'^upload_qualifications$', auth_views.upload_qualifications, name='upload_qualifications'),
+    url(r'^timeset$', auth_views.timeset, name='timeset'),
+    url(r'^arrange/$', auth_views.arrange, name = 'auth_arrange'),
+    ]

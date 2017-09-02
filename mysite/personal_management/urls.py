@@ -14,4 +14,5 @@ urlpatterns = [
 	url(r'^apply$', views.apply, name = 'apply'),
 	url(r'^create/(?P<type>manual|upload)', views.load, name = 'create'),
 	url(r'^refresh/$', views.profile_refresh, name = 'refresh'),
+	url(r'^log_out/$', views.my_log_out, name = 'log_out'),
 ]

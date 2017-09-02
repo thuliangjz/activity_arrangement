@@ -1,0 +1,10 @@
+<name>紫一402嘿嘿嘿</name><time_start>2017/7/15</time_start><time_end>2017/7/30</time_end><potential>8</potential><description>大佬聚集的寝室，实在没什么可多说的</description>
+<name>二教大教室</name><time_start>2017/7/1</time_start><time_end>2017/8/1</time_end><potential>300</potential><description>线代，复变，大物考试专用，包挂</description>
+<name>四教4102</name><time_start>2017/7/20</time_start><time_end>2017/7/30</time_end><potential>60</potential><description>自动机专场，你要玩automata我也无话可说～(´ー｀～) </description>
+<name>六教6A105</name><time_start>2017/9/1</time_start><time_end>2017/9/15</time_end><potential>150</potential><description>上微积分这么重要的地方你居然还要介绍？！除了姚老师，我们经常在这里听到Galios, Grothendieck的大名。不过不要紧张，这次我们只是开个party</description>
+<name>西阶教室</name><time_start>2017/11/1</time_start><time_end>2017/11/11</time_end><potential>300</potential><description>生导课，对其实起止日期是亮点hhhhhh</description>
+<name>紫操</name><time_start>2017/9/1</time_start><time_end>2017/9/20</time_end><potential>3000</potential><description>你只管来，出去不累趴下算我输</description>
+<name>听涛</name><time_start>2017/10/1</time_start><time_end>2017/10/31</time_end><potential>100</potential><description>来呀，你可以在这里发现快速排序第一个碰到它有多绝望!!!∑(ﾟДﾟノ)ノ</description>
+<name>东配楼202</name><time_start>2017/11/1</time_start><time_end>2017/11/30</time_end><potential>60</potential><description>班会，主题团日首选场地，刷夜也可以考虑一下嘛</description>
+<name>大礼堂</name><time_start>2018/4/1</time_start><time_end>2018/4/30</time_end><potential>500</potential><description>没错，就让我们霸一个月的场办学生街(手动@院宝)</description>
+<name>陈明游泳馆</name><time_start>2017/8/1</time_start><time_end>2017/8/31</time_end><potential>60</potential><description>这里喝水免费(｀・ω・´)</description>
